@@ -2,45 +2,45 @@ name: Build Android APK
 
 on:
   push:
-    branches: [ "main" ]
+    branches:
+      - main
   workflow_dispatch:
 
 jobs:
-  build:
-    runs-on: ubuntu-22.04
+  build-apk:
+    runs-on: ubuntu-latest
+
+    env:
+      ANDROIDSDK: ${{ github.workspace }}/.buildozer/android/platform/android-sdk
+      ANDROIDNDK: ${{ github.workspace }}/.buildozer/android/platform/android-ndk-r25b
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
+      - name: Checkout repo
+        uses: actions/checkout@v3
 
-    - name: Set up Python
-      uses: actions/setup-python@v4
-      with:
-        python-version: "3.10"
+      - name: Set up Python 3.10
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.10
 
-    - name: Install system dependencies
-      run: |
-        sudo apt update
-        sudo apt install -y \
-          git zip unzip openjdk-17-jdk \
-          autoconf automake libtool pkg-config \
-          zlib1g-dev libncurses5-dev libffi-dev \
-          libssl-dev cmake
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip wheel setuptools
+          python -m pip install cython==0.29.36 buildozer kivy pyjnius
 
-    - name: Install Buildozer
-      run: |
-        python -m pip install --upgrade pip
-        pip install buildozer cython
+      - name: Accept Android SDK licenses
+        run: yes | $ANDROIDSDK/tools/bin/sdkmanager --licenses || true
 
-    - name: Build APK
-      run: |
-        # Accept all Android licenses
-        yes | buildozer android update
-        yes | buildozer android debug
+      - name: Clean previous builds
+        run: |
+          buildozer android clean
+          rm -rf .buildozer/android/platform/build-*
 
-    - name: Upload APK
-      uses: actions/upload-artifact@v4
-      with:
-        name: CentauriLink-APK
-        path: bin/*.apk
+      - name: Build APK
+        run: buildozer -v android debug
 
+      - name: Upload APK
+        uses: actions/upload-artifact@v3
+        with:
+          name: CentauriLink-debug.apk
+          path: bin/*.apk
