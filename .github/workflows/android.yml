@@ -40,7 +40,7 @@ jobs:
         run: buildozer -v android debug
 
       - name: Upload APK
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: CentauriLink-debug.apk
           path: bin/*.apk
