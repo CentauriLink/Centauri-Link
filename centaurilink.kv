@@ -1,0 +1,527 @@
+#:kivy 2.3.0
+#:import dp kivy.metrics.dp
+
+<GradientButton@Button>:
+    size_hint_y: None
+    height: dp(48)
+    background_color: 0,0,0,0
+    color: 1,1,1,1
+    font_size: "16sp"
+    bold: True
+    canvas.before:
+        Color:
+            rgba: 0.12,0.65,0.85,1
+        RoundedRectangle:
+            pos: self.pos
+            size: self.size
+            radius: [14]
+
+<SecondaryButton@Button>:
+    size_hint_y: None
+    height: dp(44)
+    background_color: 0,0,0,0
+    color: 0.92,0.94,0.96,1
+    font_size: "14sp"
+    canvas.before:
+        Color:
+            rgba: 0.18,0.22,0.28,1
+        RoundedRectangle:
+            pos: self.pos
+            size: self.size
+            radius: [12]
+
+<CircularButton@Button>:
+    size_hint: None, None
+    size: dp(44), dp(44)
+    background_color: 0,0,0,0
+    color: 1,1,1,1
+    canvas.before:
+        Color:
+            rgba: (0.12,0.65,0.85,1) if self.state == 'down' else (0.18,0.22,0.3,1)
+        Ellipse:
+            pos: self.pos
+            size: self.size
+
+<Card@BoxLayout>:
+    orientation: "vertical"
+    padding: dp(14)
+    spacing: dp(10)
+    size_hint_y: None
+    height: self.minimum_height
+    canvas.before:
+        Color:
+            rgba: 0.10,0.12,0.15,1
+        RoundedRectangle:
+            pos: self.pos
+            size: self.size
+            radius: [16]
+
+<ScreenRoot@BoxLayout>:
+    orientation: "vertical"
+    padding: dp(14)
+    spacing: dp(12)
+    canvas.before:
+        Color:
+            rgba: 0.03,0.04,0.06,1
+        Rectangle:
+            pos: self.pos
+            size: self.size
+
+<Header@BoxLayout>:
+    size_hint_y: None
+    height: dp(84)
+    spacing: dp(12)
+    padding: dp(8)
+    canvas.before:
+        Color:
+            rgba: 0,0,0,0
+    Image:
+        id: logo
+        source: "assets/logo.png"
+        size_hint_x: None
+        width: dp(64)
+        allow_stretch: True
+        keep_ratio: True
+    BoxLayout:
+        orientation: "vertical"
+        spacing: 2
+        size_hint_y: None
+        height: self.minimum_height
+        Label:
+            text: "CentauriLink"
+            font_size: "20sp"
+            bold: True
+            color: 0.95,0.98,1,1
+            size_hint_y: None
+            height: self.texture_size[1]
+        Label:
+            text: "Elegoo Centauri Carbon"
+            font_size: "13sp"
+            color: 0.7,0.78,0.86,1
+            size_hint_y: None
+            height: self.texture_size[1]
+
+# ---------------- HOME ----------------
+<HomeScreen>:
+    ScreenRoot:
+        ScrollView:
+            do_scroll_x: False
+            bar_width: dp(6)
+            GridLayout:
+                cols: 1
+                size_hint_y: None
+                height: self.minimum_height
+                spacing: dp(12)
+                padding: dp(4)
+
+                Header:
+
+                Card:
+                    size_hint_y: None
+                    height: self.minimum_height
+                    Label:
+                        text: "Printer Temperatures"
+                        font_size: "16sp"
+                        bold: True
+                        color: 1,1,1,1
+                        size_hint_y: None
+                        height: self.texture_size[1]
+
+                    GridLayout:
+                        cols: 1
+                        spacing: dp(8)
+                        size_hint_y: None
+                        height: self.minimum_height
+
+                        BoxLayout:
+                            orientation: "vertical"
+                            size_hint_y: None
+                            height: dp(56)
+                            Label:
+                                text: "Nozzle • " + app.nozzle_temp + "°C"
+                                size_hint_y: None
+                                height: dp(20)
+                                color: 0.95,0.98,1,1
+                            ProgressBar:
+                                max: 300
+                                value: app.nozzle_value
+
+                        BoxLayout:
+                            orientation: "vertical"
+                            size_hint_y: None
+                            height: dp(56)
+                            Label:
+                                text: "Build Plate • " + app.bed_temp + "°C"
+                                size_hint_y: None
+                                height: dp(20)
+                                color: 0.95,0.98,1,1
+                            ProgressBar:
+                                max: 120
+                                value: app.bed_value
+
+                        BoxLayout:
+                            orientation: "vertical"
+                            size_hint_y: None
+                            height: dp(56)
+                            Label:
+                                text: "Chamber • " + app.chamber_temp + "°C"
+                                size_hint_y: None
+                                height: dp(20)
+                                color: 0.95,0.98,1,1
+                            ProgressBar:
+                                max: 120
+                                value: app.chamber_value
+
+                # Camera card below temperatures (no black rectangle)
+                Card:
+                    size_hint_y: None
+                    height: dp(300)
+                    Label:
+                        text: "Live Camera"
+                        font_size: "16sp"
+                        bold: True
+                        color: 1,1,1,1
+                        size_hint_y: None
+                        height: self.texture_size[1]
+
+                    RelativeLayout:
+                        size_hint_y: None
+                        height: dp(240)
+
+                        Image:
+                            id: camera_view
+                            source: ""
+                            allow_stretch: True
+                            keep_ratio: True
+                            size_hint: 1, 1
+                            pos_hint: {"center_x":0.5, "center_y":0.5}
+                            canvas.before:
+                                Color:
+                                    rgba: 0.05,0.06,0.07,0.02
+                                RoundedRectangle:
+                                    pos: self.pos
+                                    size: self.size
+                                    radius: [12]
+
+                        BoxLayout:
+                            orientation: "vertical"
+                            size_hint: None, None
+                            pos_hint: {"right":0.99, "y":0.02}
+                            width: dp(140)
+                            height: dp(100)
+                            spacing: dp(6)
+                            Button:
+                                text: "Play/Reload"
+                                size_hint_y: None
+                                height: dp(40)
+                                on_release:
+                                    root.start_camera()
+                            Button:
+                                text: "Open in browser"
+                                size_hint_y: None
+                                height: dp(40)
+                                on_release: app.root.get_screen('print').open_camera_in_browser()
+
+                Card:
+                    size_hint_y: None
+                    height: self.minimum_height
+                    Label:
+                        text: "Printer Status"
+                        font_size: "16sp"
+                        bold: True
+                        size_hint_y: None
+                        height: self.texture_size[1]
+
+                    GridLayout:
+                        cols: 1
+                        spacing: dp(6)
+                        size_hint_y: None
+                        height: self.minimum_height
+
+                        Label:
+                            text: "State: " + app.print_state
+                            size_hint_y: None
+                            height: dp(22)
+                        BoxLayout:
+                            size_hint_y: None
+                            height: dp(36)
+                            Label:
+                                size_hint_x: None
+                                width: dp(110)
+                                text: "Progress:"
+                            ProgressBar:
+                                max: 100
+                                value: app.print_progress
+                        Label:
+                            text: "Layer: " + (app.print_layer if app.print_layer else "-") + " / " + (app.print_total_layer if app.print_total_layer else "-")
+                            size_hint_y: None
+                            height: dp(22)
+                        Label:
+                            text: "Coords: " + app.coords
+                            size_hint_y: None
+                            height: dp(22)
+                        Label:
+                            text: "Lights: " + app.light_state
+                            size_hint_y: None
+                            height: dp(22)
+                        Label:
+                            text: "Updated: " + app.status_timestamp
+                            size_hint_y: None
+                            height: dp(22)
+
+                BoxLayout:
+                    size_hint_y: None
+                    height: dp(56)
+                    spacing: dp(10)
+                    GradientButton:
+                        text: "Open Print Control"
+                        on_release: app.root.current = "print"
+                    SecondaryButton:
+                        text: "Settings"
+                        on_release: app.root.current = "settings"
+
+<PrintScreen>:
+    ScreenRoot:
+        ScrollView:
+            do_scroll_x: False
+            bar_width: dp(6)
+            GridLayout:
+                cols: 1
+                spacing: dp(12)
+                size_hint_y: None
+                height: self.minimum_height
+                padding: dp(4)
+
+                Header:
+
+                Card:
+                    size_hint_y: None
+                    height: self.minimum_height
+                    Label:
+                        text: root.status_text
+                        font_size: "14sp"
+                        bold: True
+                        size_hint_y: None
+                        height: self.texture_size[1]
+
+                BoxLayout:
+                    size_hint_y: None
+                    height: dp(48)
+                    spacing: dp(8)
+                    TextInput:
+                        id: manual_ip
+                        hint_text: "Enter printer IP (no port)"
+                        multiline: False
+                    GradientButton:
+                        text: "Add / Select"
+                        size_hint_x: None
+                        width: dp(140)
+                        on_release: root.add_manual_printer(manual_ip.text)
+
+                BoxLayout:
+                    size_hint_y: None
+                    height: dp(56)
+                    spacing: dp(8)
+                    GradientButton:
+                        text: "Connect (WS -> HTTP)"
+                        on_release: root.connect_printer()
+                    ToggleButton:
+                        id: auto_poll
+                        text: "Auto Poll"
+                        on_state:
+                            root.toggle_auto_poll(True if self.state == 'down' else False)
+
+                Card:
+                    size_hint_y: None
+                    height: self.minimum_height
+                    Label:
+                        text: "Fan Controls"
+                        font_size: "16sp"
+                        bold: True
+                        size_hint_y: None
+                        height: self.texture_size[1]
+
+                    GridLayout:
+                        cols: 1
+                        spacing: dp(8)
+                        size_hint_y: None
+                        height: self.minimum_height
+
+                        BoxLayout:
+                            size_hint_y: None
+                            height: dp(56)
+                            spacing: dp(8)
+                            Label:
+                                text: "Model Fan"
+                                size_hint_x: None
+                                width: dp(120)
+                            ToggleButton:
+                                id: model_toggle
+                                text: "On/Off"
+                                size_hint_x: None
+                                width: dp(90)
+                                on_state: root.on_fan_toggle("ModelFan", True if self.state == 'down' else False)
+                            Slider:
+                                id: model_slider
+                                min: 0
+                                max: 100
+                                value: 0
+                            CircularButton:
+                                text: "Set"
+                                on_release: root.set_fan_speed("ModelFan", int(model_slider.value))
+
+                        BoxLayout:
+                            size_hint_y: None
+                            height: dp(56)
+                            spacing: dp(8)
+                            Label:
+                                text: "Auxiliary Fan"
+                                size_hint_x: None
+                                width: dp(120)
+                            ToggleButton:
+                                id: aux_toggle
+                                text: "On/Off"
+                                size_hint_x: None
+                                width: dp(90)
+                                on_state: root.on_fan_toggle("AuxiliaryFan", True if self.state == 'down' else False)
+                            Slider:
+                                id: aux_slider
+                                min: 0
+                                max: 100
+                                value: 0
+                            CircularButton:
+                                text: "Set"
+                                on_release: root.set_fan_speed("AuxiliaryFan", int(aux_slider.value))
+
+                        BoxLayout:
+                            size_hint_y: None
+                            height: dp(56)
+                            spacing: dp(8)
+                            Label:
+                                text: "Box Fan"
+                                size_hint_x: None
+                                width: dp(120)
+                            ToggleButton:
+                                id: box_toggle
+                                text: "On/Off"
+                                size_hint_x: None
+                                width: dp(90)
+                                on_state: root.on_fan_toggle("BoxFan", True if self.state == 'down' else False)
+                            Slider:
+                                id: box_slider
+                                min: 0
+                                max: 100
+                                value: 0
+                            CircularButton:
+                                text: "Set"
+                                on_release: root.set_fan_speed("BoxFan", int(box_slider.value))
+
+                Card:
+                    size_hint_y: None
+                    height: dp(160)
+                    Label:
+                        text: "Manual Printers"
+                        font_size: "16sp"
+                        bold: True
+                        size_hint_y: None
+                        height: self.texture_size[1]
+
+                    ScrollView:
+                        size_hint_y: None
+                        height: dp(120)
+                        do_scroll_x: False
+                        GridLayout:
+                            id: device_list
+                            cols: 1
+                            size_hint_y: None
+                            height: self.minimum_height
+                            spacing: dp(6)
+
+                Card:
+                    size_hint_y: None
+                    height: self.minimum_height
+                    Label:
+                        text: "Live Status (last)"
+                        font_size: "16sp"
+                        bold: True
+                        size_hint_y: None
+                        height: self.texture_size[1]
+
+                    GridLayout:
+                        cols: 1
+                        spacing: dp(6)
+                        size_hint_y: None
+                        height: self.minimum_height
+
+                        Label:
+                            text: "Selected: " + (root.selected_ip if root.selected_ip else "(none)")
+                            size_hint_y: None
+                            height: dp(22)
+                        Label:
+                            text: "Temperature (last): " + root.current_temp
+                            size_hint_y: None
+                            height: dp(22)
+                        Label:
+                            text: "State: " + app.print_state
+                            size_hint_y: None
+                            height: dp(22)
+                        Label:
+                            text: "Progress: {}%".format(int(app.print_progress))
+                            size_hint_y: None
+                            height: dp(22)
+                        Label:
+                            text: "Coords: " + app.coords
+                            size_hint_y: None
+                            height: dp(22)
+                        Label:
+                            text: "Lights: " + app.light_state
+                            size_hint_y: None
+                            height: dp(22)
+                        Label:
+                            text: "Updated: " + app.status_timestamp
+                            size_hint_y: None
+                            height: dp(22)
+
+                BoxLayout:
+                    size_hint_y: None
+                    height: dp(56)
+                    spacing: dp(8)
+                    SecondaryButton:
+                        text: "Back to Home"
+                        on_press: app.root.current = "home"
+                    SecondaryButton:
+                        text: "Open Camera in Browser"
+                        on_release: root.open_camera_in_browser()
+                    SecondaryButton:
+                        text: "Disconnect"
+                        on_press: root.disconnect_printer()
+
+# ---------------- SETTINGS ----------------
+<SettingsScreen>:
+    ScreenRoot:
+        Header:
+        Card:
+            size_hint_y: None
+            height: self.minimum_height
+            Label:
+                text: "Application"
+                font_size: "16sp"
+                bold: True
+                size_hint_y: None
+                height: self.texture_size[1]
+            Label:
+                text: "WebSocket: ws://<IP>:3030/websocket"
+                size_hint_y: None
+                height: dp(20)
+            Label:
+                text: "Fallback polling interval: 1s"
+                size_hint_y: None
+                height: dp(20)
+
+        BoxLayout:
+            size_hint_y: None
+            height: dp(50)
+            SecondaryButton:
+                text: "Back"
+                on_press: app.root.current = "home"
+
