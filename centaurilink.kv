@@ -1,46 +1,90 @@
-#:kivy 2.3.0
 #:import dp kivy.metrics.dp
 
-<GradientButton@Button>:
-    size_hint_y: None
-    height: dp(48)
+# =========================================================
+#  CentauriLink FINAL KV (FIXED TextInput visibility)
+#  - IP text ALWAYS visible (TextField container approach)
+#  - Smaller button text so labels fit
+#  - Rounded corners everywhere
+#  - Button text stays inside buttons
+# =========================================================
+
+# --- Button base: text stays inside, centered, visible (smaller font) ---
+<WrapButton@Button>:
     background_color: 0,0,0,0
     color: 1,1,1,1
-    font_size: "16sp"
     bold: True
+    font_size: "12sp"
+    padding: dp(14), dp(10)
+    text_size: self.width - dp(24), None
+    halign: "center"
+    valign: "middle"
+    shorten: True
+    shorten_from: "right"
+    line_height: 1.0
+
+<GradientButton@WrapButton>:
+    size_hint_y: None
+    height: dp(48)
+    font_size: "13sp"
     canvas.before:
         Color:
             rgba: 0.12,0.65,0.85,1
         RoundedRectangle:
             pos: self.pos
             size: self.size
-            radius: [14]
+            radius: [16]
 
-<SecondaryButton@Button>:
+<SecondaryButton@WrapButton>:
     size_hint_y: None
-    height: dp(44)
-    background_color: 0,0,0,0
+    height: dp(46)
+    font_size: "12sp"
     color: 0.92,0.94,0.96,1
-    font_size: "14sp"
     canvas.before:
         Color:
             rgba: 0.18,0.22,0.28,1
         RoundedRectangle:
             pos: self.pos
             size: self.size
-            radius: [12]
+            radius: [14]
 
-<CircularButton@Button>:
-    size_hint: None, None
-    size: dp(44), dp(44)
+<ClickableImage@ButtonBehavior+Image>:
+    allow_stretch: True
+    keep_ratio: True
+
+<TogglePill@ToggleButton>:
+    size_hint_y: None
+    height: dp(46)
     background_color: 0,0,0,0
     color: 1,1,1,1
+    bold: True
+    font_size: "12sp"
+    padding: dp(14), dp(10)
+    text_size: self.width - dp(24), None
+    halign: "center"
+    valign: "middle"
+    shorten: True
+    shorten_from: "right"
     canvas.before:
         Color:
-            rgba: (0.12,0.65,0.85,1) if self.state == 'down' else (0.18,0.22,0.3,1)
-        Ellipse:
+            rgba: (0.12,0.65,0.85,1) if self.state == "down" else (0.18,0.22,0.28,1)
+        RoundedRectangle:
             pos: self.pos
             size: self.size
+            radius: [14]
+
+<CircularButton@WrapButton>:
+    size_hint: None, None
+    size: dp(44), dp(44)
+    padding: 0, 0
+    text_size: self.size
+    font_size: "11sp"
+    canvas.before:
+        Color:
+            rgba: (0.12,0.65,0.85,1) if self.state == 'down' else (0.20,0.24,0.30,1)
+        RoundedRectangle:
+            pos: self.pos
+            size: self.size
+            radius: [22]
 
 <Card@BoxLayout>:
     orientation: "vertical"
@@ -54,7 +98,7 @@
         RoundedRectangle:
             pos: self.pos
             size: self.size
-            radius: [16]
+            radius: [18]
 
 <ScreenRoot@BoxLayout>:
     orientation: "vertical"
@@ -72,11 +116,7 @@
     height: dp(84)
     spacing: dp(12)
     padding: dp(8)
-    canvas.before:
-        Color:
-            rgba: 0,0,0,0
     Image:
-        id: logo
         source: "assets/logo.png"
         size_hint_x: None
         width: dp(64)
@@ -101,6 +141,61 @@
             size_hint_y: None
             height: self.texture_size[1]
 
+# =========================================================
+# FIXED INPUT: draw background with container, TextInput is transparent
+# =========================================================
+<TextField@BoxLayout>:
+    size_hint_y: None
+    height: dp(50)
+    padding: dp(12), dp(10)
+    canvas.before:
+        Color:
+            rgba: 0.12,0.14,0.18,1
+        RoundedRectangle:
+            pos: self.pos
+            size: self.size
+            radius: [14]
+
+# Keep TextInput neutral (no global canvas / no hidden textures)
+<TextInput>:
+    # hard-disable default textures
+    background_normal: ""
+    background_active: ""
+    background_disabled_normal: ""
+    background_disabled_active: ""
+    background_color: 0,0,0,0
+
+    # text visibility
+    foreground_color: 1,1,1,1
+    cursor_color: 0.12,0.65,0.85,1
+    selection_color: 0.12,0.65,0.85,0.35
+    hint_text_color: 0.60,0.66,0.74,1
+
+    font_size: "15sp"
+    write_tab: False
+    padding: 0, 0
+
+# Style any plain Button (device list etc.)
+<Button>:
+    background_color: 0,0,0,0
+    color: 0.92,0.94,0.96,1
+    bold: True
+    font_size: "12sp"
+    padding: dp(14), dp(10)
+    text_size: self.width - dp(24), None
+    halign: "center"
+    valign: "middle"
+    shorten: True
+    shorten_from: "right"
+    canvas.before:
+        Color:
+            rgba: 0.16,0.19,0.24,1
+        RoundedRectangle:
+            pos: self.pos
+            size: self.size
+            radius: [14]
+
+
 # ---------------- HOME ----------------
 <HomeScreen>:
     ScreenRoot:
@@ -117,8 +212,6 @@
                 Header:
 
                 Card:
-                    size_hint_y: None
-                    height: self.minimum_height
                     Label:
                         text: "Printer Temperatures"
                         font_size: "16sp"
@@ -172,10 +265,9 @@
                                 max: 120
                                 value: app.chamber_value
 
-                # Camera card below temperatures (no black rectangle)
                 Card:
                     size_hint_y: None
-                    height: dp(300)
+                    height: dp(310)
                     Label:
                         text: "Live Camera"
                         font_size: "16sp"
@@ -186,7 +278,7 @@
 
                     RelativeLayout:
                         size_hint_y: None
-                        height: dp(240)
+                        height: dp(250)
 
                         Image:
                             id: camera_view
@@ -197,34 +289,29 @@
                             pos_hint: {"center_x":0.5, "center_y":0.5}
                             canvas.before:
                                 Color:
-                                    rgba: 0.05,0.06,0.07,0.02
+                                    rgba: 0.06,0.07,0.09,1
                                 RoundedRectangle:
                                     pos: self.pos
                                     size: self.size
-                                    radius: [12]
+                                    radius: [14]
 
                         BoxLayout:
                             orientation: "vertical"
                             size_hint: None, None
                             pos_hint: {"right":0.99, "y":0.02}
-                            width: dp(140)
-                            height: dp(100)
-                            spacing: dp(6)
-                            Button:
-                                text: "Play/Reload"
-                                size_hint_y: None
-                                height: dp(40)
-                                on_release:
-                                    root.start_camera()
-                            Button:
-                                text: "Open in browser"
-                                size_hint_y: None
-                                height: dp(40)
+                            width: dp(160)
+                            height: dp(108)
+                            spacing: dp(8)
+                            GradientButton:
+                                text: "Play / Reload"
+                                height: dp(46)
+                                on_release: root.start_camera()
+                            SecondaryButton:
+                                text: "Open in Browser"
+                                height: dp(46)
                                 on_release: app.root.get_screen('print').open_camera_in_browser()
 
                 Card:
-                    size_hint_y: None
-                    height: self.minimum_height
                     Label:
                         text: "Printer Status"
                         font_size: "16sp"
@@ -280,6 +367,8 @@
                         text: "Settings"
                         on_release: app.root.current = "settings"
 
+
+# ---------------- PRINT ----------------
 <PrintScreen>:
     ScreenRoot:
         ScrollView:
@@ -295,8 +384,6 @@
                 Header:
 
                 Card:
-                    size_hint_y: None
-                    height: self.minimum_height
                     Label:
                         text: root.status_text
                         font_size: "14sp"
@@ -304,36 +391,56 @@
                         size_hint_y: None
                         height: self.texture_size[1]
 
+                # FIXED IP INPUT (TextField container)
                 BoxLayout:
                     size_hint_y: None
-                    height: dp(48)
-                    spacing: dp(8)
-                    TextInput:
-                        id: manual_ip
-                        hint_text: "Enter printer IP (no port)"
-                        multiline: False
+                    height: dp(50)
+                    spacing: dp(10)
+
+                    TextField:
+                        TextInput:
+                            id: manual_ip
+                            hint_text: "Enter printer IP / hostname"
+                            multiline: False
+                            halign: "left"
+                            cursor_width: dp(2)
+
+                            # Force visible text
+                            foreground_color: 1,1,1,1
+                            hint_text_color: 0.60,0.66,0.74,1
+                            cursor_color: 0.12,0.65,0.85,1
+                            selection_color: 0.12,0.65,0.85,0.35
+
+                            # Kill background textures (again, explicit)
+                            background_normal: ""
+                            background_active: ""
+                            background_disabled_normal: ""
+                            background_disabled_active: ""
+                            background_color: 0,0,0,0
+
+                            font_size: "15sp"
+                            padding: 0, 0
+                            write_tab: False
+
                     GradientButton:
                         text: "Add / Select"
                         size_hint_x: None
-                        width: dp(140)
+                        width: dp(150)
                         on_release: root.add_manual_printer(manual_ip.text)
 
                 BoxLayout:
                     size_hint_y: None
-                    height: dp(56)
-                    spacing: dp(8)
+                    height: dp(52)
+                    spacing: dp(10)
                     GradientButton:
-                        text: "Connect (WS -> HTTP)"
+                        text: "Connect (Auto)"
                         on_release: root.connect_printer()
-                    ToggleButton:
+                    TogglePill:
                         id: auto_poll
                         text: "Auto Poll"
-                        on_state:
-                            root.toggle_auto_poll(True if self.state == 'down' else False)
+                        on_state: root.toggle_auto_poll(True if self.state == 'down' else False)
 
                 Card:
-                    size_hint_y: None
-                    height: self.minimum_height
                     Label:
                         text: "Fan Controls"
                         font_size: "16sp"
@@ -343,23 +450,23 @@
 
                     GridLayout:
                         cols: 1
-                        spacing: dp(8)
+                        spacing: dp(10)
                         size_hint_y: None
                         height: self.minimum_height
 
                         BoxLayout:
                             size_hint_y: None
                             height: dp(56)
-                            spacing: dp(8)
+                            spacing: dp(10)
                             Label:
                                 text: "Model Fan"
                                 size_hint_x: None
                                 width: dp(120)
-                            ToggleButton:
+                            TogglePill:
                                 id: model_toggle
-                                text: "On/Off"
+                                text: "On / Off"
                                 size_hint_x: None
-                                width: dp(90)
+                                width: dp(96)
                                 on_state: root.on_fan_toggle("ModelFan", True if self.state == 'down' else False)
                             Slider:
                                 id: model_slider
@@ -373,16 +480,16 @@
                         BoxLayout:
                             size_hint_y: None
                             height: dp(56)
-                            spacing: dp(8)
+                            spacing: dp(10)
                             Label:
-                                text: "Auxiliary Fan"
+                                text: "Aux Fan"
                                 size_hint_x: None
                                 width: dp(120)
-                            ToggleButton:
+                            TogglePill:
                                 id: aux_toggle
-                                text: "On/Off"
+                                text: "On / Off"
                                 size_hint_x: None
-                                width: dp(90)
+                                width: dp(96)
                                 on_state: root.on_fan_toggle("AuxiliaryFan", True if self.state == 'down' else False)
                             Slider:
                                 id: aux_slider
@@ -396,16 +503,16 @@
                         BoxLayout:
                             size_hint_y: None
                             height: dp(56)
-                            spacing: dp(8)
+                            spacing: dp(10)
                             Label:
                                 text: "Box Fan"
                                 size_hint_x: None
                                 width: dp(120)
-                            ToggleButton:
+                            TogglePill:
                                 id: box_toggle
-                                text: "On/Off"
+                                text: "On / Off"
                                 size_hint_x: None
-                                width: dp(90)
+                                width: dp(96)
                                 on_state: root.on_fan_toggle("BoxFan", True if self.state == 'down' else False)
                             Slider:
                                 id: box_slider
@@ -418,7 +525,7 @@
 
                 Card:
                     size_hint_y: None
-                    height: dp(160)
+                    height: dp(170)
                     Label:
                         text: "Manual Printers"
                         font_size: "16sp"
@@ -428,18 +535,16 @@
 
                     ScrollView:
                         size_hint_y: None
-                        height: dp(120)
+                        height: dp(126)
                         do_scroll_x: False
                         GridLayout:
                             id: device_list
                             cols: 1
                             size_hint_y: None
                             height: self.minimum_height
-                            spacing: dp(6)
+                            spacing: dp(8)
 
                 Card:
-                    size_hint_y: None
-                    height: self.minimum_height
                     Label:
                         text: "Live Status (last)"
                         font_size: "16sp"
@@ -458,7 +563,7 @@
                             size_hint_y: None
                             height: dp(22)
                         Label:
-                            text: "Temperature (last): " + root.current_temp
+                            text: "Temperature: " + root.current_temp
                             size_hint_y: None
                             height: dp(22)
                         Label:
@@ -485,43 +590,106 @@
                 BoxLayout:
                     size_hint_y: None
                     height: dp(56)
-                    spacing: dp(8)
+                    spacing: dp(10)
                     SecondaryButton:
-                        text: "Back to Home"
-                        on_press: app.root.current = "home"
+                        text: "Home"
+                        on_release: app.root.current = "home"
                     SecondaryButton:
-                        text: "Open Camera in Browser"
+                        text: "Camera"
                         on_release: root.open_camera_in_browser()
                     SecondaryButton:
                         text: "Disconnect"
-                        on_press: root.disconnect_printer()
+                        on_release: root.disconnect_printer()
+
 
 # ---------------- SETTINGS ----------------
 <SettingsScreen>:
     ScreenRoot:
-        Header:
-        Card:
-            size_hint_y: None
-            height: self.minimum_height
-            Label:
-                text: "Application"
-                font_size: "16sp"
-                bold: True
+        ScrollView:
+            do_scroll_x: False
+            bar_width: dp(6)
+            GridLayout:
+                cols: 1
                 size_hint_y: None
-                height: self.texture_size[1]
-            Label:
-                text: "WebSocket: ws://<IP>:3030/websocket"
-                size_hint_y: None
-                height: dp(20)
-            Label:
-                text: "Fallback polling interval: 1s"
-                size_hint_y: None
-                height: dp(20)
+                height: self.minimum_height
+                spacing: dp(12)
+                padding: dp(4)
 
-        BoxLayout:
-            size_hint_y: None
-            height: dp(50)
-            SecondaryButton:
-                text: "Back"
-                on_press: app.root.current = "home"
+                Header:
 
+                Card:
+                    Label:
+                        text: "Settings"
+                        font_size: "16sp"
+                        bold: True
+                        size_hint_y: None
+                        height: self.texture_size[1]
+                    Label:
+                        text: "WebSocket: ws://<IP>:3030/websocket"
+                        size_hint_y: None
+                        height: dp(20)
+                        color: 0.75,0.82,0.9,1
+                    Label:
+                        text: "HTTP fallback polling supported"
+                        size_hint_y: None
+                        height: dp(20)
+                        color: 0.75,0.82,0.9,1
+                    Label:
+                        text: "Support: work.dewandeljack@gmail.com"
+                        size_hint_y: None
+                        height: dp(20)
+                        color: 0.75,0.82,0.9,1
+
+                Card:
+                    Label:
+                        text: "Donate"
+                        font_size: "16sp"
+                        bold: True
+                        size_hint_y: None
+                        height: self.texture_size[1]
+                    Label:
+                        text: "Paypal: work.dewandeljack@gmail.com"
+                        size_hint_y: None
+                        height: dp(20)
+                        color: 0.75,0.82,0.9,1
+                    Label:
+                        text: "IBAN: BE60 7507 1070 0570"
+                        size_hint_y: None
+                        height: dp(20)
+                        color: 0.75,0.82,0.9,1
+                Card:
+                    Label:
+                        text: "Links"
+                        font_size: "16sp"
+                        bold: True
+                        size_hint_y: None
+                        height: self.texture_size[1]
+                    GradientButton:
+                        text: "Open License"
+                        on_release: app.open_license()
+                    SecondaryButton:
+                        text: "Open GitHub"
+                        on_release: app.open_github()
+
+                Card:
+                    Label:
+                        text: "Partners"
+                        font_size: "16sp"
+                        bold: True
+                        size_hint_y: None
+                        height: self.texture_size[1]
+
+                    ClickableImage:
+                        source: "assets/Partner1.png"
+                        size_hint_y: None
+                        height: dp(80)
+                        on_release:
+                            app.open_url("https://octoeverywhere.com")
+
+                BoxLayout:
+                    size_hint_y: None
+                    height: dp(56)
+                    spacing: dp(10)
+                    SecondaryButton:
+                        text: "Back"
+                        on_release: app.root.current = "home"
