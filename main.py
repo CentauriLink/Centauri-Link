@@ -493,6 +493,8 @@ class PrintScreen(Screen):
         webbrowser.open(url)
         self._set_status("Opened camera in browser")
 
+class OctoScreen(Screen):
+        pass
 
 class SettingsScreen(Screen):
     pass
@@ -533,6 +535,7 @@ class CentauriApp(App):
         sm.add_widget(HomeScreen(name="home"))
         sm.add_widget(PrintScreen(name="print"))
         sm.add_widget(SettingsScreen(name="settings"))
+        sm.add_widget(OctoScreen(name="octo"))
         return sm
 
     # ---------------- UDP discovery (NEW) ----------------
