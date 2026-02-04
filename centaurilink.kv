@@ -1,10 +1,13 @@
 #:import dp kivy.metrics.dp
+#:import Window kivy.core.window.Window
 
 # =========================================================
-#  CentauriLink - FINAL KV (Sleek Dark + Bottom Nav) UPDATED
-#  - REMOVED: Fan Controls card
-#  - REMOVED: Live Camera display card (home)
-#  - Logo: assumes the PNG itself is already rounded (no extra rounding/mask)
+#  CentauriLink - FINAL KV (Sleek Dark + Bottom Nav)
+#  - HOME: local-only temps + status (no cam, no controls)
+#  - CONTROL: stays, but local-mode = no cam button, no fan controls
+#  - OCTO: connect + status + temp + camera box + placeholder fan/temp controls
+#  - SETTINGS: donate + links + partners (clickable partner logo using ClickableImage)
+#  - Background covers FULL SCREEN (Window.size)
 # =========================================================
 
 # ---------------- Base widgets ----------------
@@ -110,32 +113,6 @@
             rounded_rectangle: (self.x, self.y, self.width, self.height, 16,16,16,16)
             width: 1.0
 
-<CircularButton@WrapButton>:
-    size_hint: None, None
-    size: dp(44), dp(44)
-    padding: 0, 0
-    text_size: self.size
-    font_size: "11sp"
-    canvas.before:
-        Color:
-            rgba: 0,0,0,0.45
-        RoundedRectangle:
-            pos: self.x, self.y - dp(2)
-            size: self.size
-            radius: [22]
-        Color:
-            rgba: 0.11,0.13,0.18,0.92
-        RoundedRectangle:
-            pos: self.pos
-            size: self.size
-            radius: [22]
-    canvas.after:
-        Color:
-            rgba: 1,1,1,0.10
-        Line:
-            rounded_rectangle: (self.x, self.y, self.width, self.height, 22,22,22,22)
-            width: 1.0
-
 <Card@BoxLayout>:
     orientation: "vertical"
     padding: dp(14)
@@ -155,8 +132,6 @@
             pos: self.pos
             size: self.size
             radius: [20]
-        Color:
-            rgba: 1,1,1,0.05
     canvas.after:
         Color:
             rgba: 1,1,1,0.10
@@ -166,19 +141,22 @@
 
 <ScreenRoot@BoxLayout>:
     orientation: "vertical"
+    size_hint: 1, 1
     padding: dp(14)
     spacing: dp(12)
     canvas.before:
         Color:
             rgba: 0.03,0.04,0.06,1
         Rectangle:
-            pos: self.pos
-            size: self.size
+            pos: 0, 0
+            size: Window.size
+
         Color:
             rgba: 0.06,0.10,0.20,0.55
         Rectangle:
-            pos: self.x, self.y + self.height*0.45
-            size: self.width, self.height*0.55
+            pos: 0, Window.height*0.45
+            size: Window.width, Window.height*0.55
+
         Color:
             rgba: 0.10,0.65,0.95,0.18
         Ellipse:
@@ -227,7 +205,6 @@
         allow_stretch: True
         keep_ratio: True
 
-
     BoxLayout:
         orientation: "vertical"
         spacing: dp(2)
@@ -246,6 +223,7 @@
             height: self.texture_size[1]
 
     Widget:
+
 <TextField@BoxLayout>:
     size_hint_y: None
     height: dp(50)
@@ -278,40 +256,14 @@
     write_tab: False
     padding: 0, 0
 
-<Button>:
-    background_color: 0,0,0,0
-    color: 0.92,0.94,0.96,1
-    bold: True
-    font_size: "12sp"
-    padding: dp(14), dp(10)
-    text_size: self.width - dp(24), None
-    halign: "center"
-    valign: "middle"
-    shorten: True
-    shorten_from: "right"
-    canvas.before:
-        Color:
-            rgba: 0,0,0,0.45
-        RoundedRectangle:
-            pos: self.x, self.y - dp(2)
-            size: self.size
-            radius: [16]
-        Color:
-            rgba: 0.11,0.13,0.18,0.92
-        RoundedRectangle:
-            pos: self.pos
-            size: self.size
-            radius: [16]
-    canvas.after:
-        Color:
-            rgba: 1,1,1,0.10
-        Line:
-            rounded_rectangle: (self.x, self.y, self.width, self.height, 16,16,16,16)
-            width: 1.0
-
 <ClickableImage@ButtonBehavior+Image>:
     allow_stretch: True
     keep_ratio: True
+
+<IconButton@ButtonBehavior+Image>:
+    allow_stretch: True
+    keep_ratio: True
+    opacity: 1.0
 
 
 # ---------------- Bottom Navigation ----------------
@@ -381,7 +333,7 @@
         text_size: self.size
 
 
-# ---------------- HOME ----------------
+# ---------------- HOME (LOCAL ONLY) ----------------
 
 <HomeScreen>:
     ScreenRoot:
@@ -404,7 +356,7 @@
 
                     Card:
                         Label:
-                            text: "Printer Temperatures"
+                            text: "Local Printer Temperatures"
                             font_size: "16sp"
                             bold: True
                             color: 1,1,1,1
@@ -459,11 +411,9 @@
                                     max: 120
                                     value: app.chamber_value
 
-                    # REMOVED: Live Camera card
-
                     Card:
                         Label:
-                            text: "Printer Status"
+                            text: "Local Printer Status"
                             font_size: "16sp"
                             bold: True
                             size_hint_y: None
@@ -546,7 +496,7 @@
                     on_release: app.root.current = "settings"
 
 
-# ---------------- PRINT / CONTROL ----------------
+# ---------------- PRINT / CONTROL (LOCAL MODE, NO CAM/NO FAN CONTROLS) ----------------
 
 <PrintScreen>:
     ScreenRoot:
@@ -607,8 +557,6 @@
                             text: "Auto Poll"
                             on_state: root.toggle_auto_poll(True if self.state == 'down' else False)
 
-                    # REMOVED: Fan Controls card
-
                     Card:
                         size_hint_y: None
                         height: dp(180)
@@ -632,7 +580,7 @@
 
                     Card:
                         Label:
-                            text: "Live Status (last)"
+                            text: "Local Live Status (last)"
                             font_size: "16sp"
                             bold: True
                             size_hint_y: None
@@ -693,9 +641,6 @@
                             height: dp(52)
                             spacing: dp(10)
                             SecondaryButton:
-                                text: "Camera (Browser)"
-                                on_release: root.open_camera_in_browser()
-                            SecondaryButton:
                                 text: "Disconnect"
                                 on_release: root.disconnect_printer()
 
@@ -728,7 +673,7 @@
                     on_release: app.root.current = "settings"
 
 
-# ---------------- OCTO (EMPTY TAB FOR LATER) ----------------
+# ---------------- OCTO (REMOTE MODE UI + PLACEHOLDERS) ----------------
 
 <OctoScreen>:
     ScreenRoot:
@@ -758,14 +703,246 @@
                             height: self.texture_size[1]
 
                         Label:
-                            text: "Reserved tab for OctoEverywhere linking (coming soon)."
+                            text: root.status_text
                             color: 0.70,0.78,0.88,1
                             size_hint_y: None
-                            height: self.texture_size[1] + dp(8)
+                            height: self.texture_size[1] + dp(6)
+
+                        PrimaryButton:
+                            text: "Connect to OctoEverywhere"
+                            on_release: root.connect_octoeverywhere()
 
                         SecondaryButton:
                             text: "Open OctoEverywhere Website"
                             on_release: app.open_url("https://octoeverywhere.com")
+
+                    Card:
+                        Label:
+                            text: "Octo Temperatures"
+                            font_size: "16sp"
+                            bold: True
+                            color: 1,1,1,1
+                            size_hint_y: None
+                            height: self.texture_size[1]
+
+                        GridLayout:
+                            cols: 1
+                            spacing: dp(10)
+                            size_hint_y: None
+                            height: self.minimum_height
+
+                            BoxLayout:
+                                orientation: "vertical"
+                                size_hint_y: None
+                                height: dp(60)
+                                Label:
+                                    text: "Nozzle • " + app.octo_nozzle_temp + "°C"
+                                    size_hint_y: None
+                                    height: dp(22)
+                                    color: 0.95,0.98,1,1
+                                    bold: True
+                                ProgressBar:
+                                    max: 300
+                                    value: app.octo_nozzle_value
+
+                            BoxLayout:
+                                orientation: "vertical"
+                                size_hint_y: None
+                                height: dp(60)
+                                Label:
+                                    text: "Build Plate • " + app.octo_bed_temp + "°C"
+                                    size_hint_y: None
+                                    height: dp(22)
+                                    color: 0.95,0.98,1,1
+                                    bold: True
+                                ProgressBar:
+                                    max: 120
+                                    value: app.octo_bed_value
+
+                            BoxLayout:
+                                orientation: "vertical"
+                                size_hint_y: None
+                                height: dp(60)
+                                Label:
+                                    text: "Chamber • " + app.octo_chamber_temp + "°C"
+                                    size_hint_y: None
+                                    height: dp(22)
+                                    color: 0.95,0.98,1,1
+                                    bold: True
+                                ProgressBar:
+                                    max: 120
+                                    value: app.octo_chamber_value
+
+                    Card:
+                        Label:
+                            text: "Octo Camera View (Comming soon..)"
+                            font_size: "16sp"
+                            bold: True
+                            size_hint_y: None
+                            height: self.texture_size[1]
+
+                        BoxLayout:
+                            size_hint_y: None
+                            height: dp(190)
+                            padding: dp(10)
+                            canvas.before:
+                                Color:
+                                    rgba: 0.08,0.10,0.14,0.85
+                                RoundedRectangle:
+                                    pos: self.pos
+                                    size: self.size
+                                    radius: [18]
+
+                            # CHANGED to Image so we can render MJPEG frames into it
+                            Image:
+                                id: octo_camera
+                                source: ""
+                                allow_stretch: True
+                                keep_ratio: True
+
+                    Card:
+                        Label:
+                            text: "Fan Control (placeholders)"
+                            font_size: "16sp"
+                            bold: True
+                            size_hint_y: None
+                            height: self.texture_size[1]
+
+                        Label:
+                            text: "UI-only for now."
+                            color: 0.70,0.78,0.88,1
+                            size_hint_y: None
+                            height: dp(18)
+
+                        GridLayout:
+                            cols: 1
+                            spacing: dp(10)
+                            size_hint_y: None
+                            height: self.minimum_height
+
+                            BoxLayout:
+                                size_hint_y: None
+                                height: dp(54)
+                                spacing: dp(10)
+
+                                IconButton:
+                                    source: "assets/icons/nozzle.png"
+                                    size_hint: None, None
+                                    size: dp(42), dp(42)
+                                    on_release: root.ui_only_notice("Model fan (UI only)")
+
+                                Slider:
+                                    id: octo_model_fan
+                                    min: 0
+                                    max: 100
+                                    value: 0
+
+                                Label:
+                                    size_hint_x: None
+                                    width: dp(52)
+                                    text: str(int(octo_model_fan.value)) + "%"
+                                    color: 0.86,0.90,0.96,1
+                                    halign: "right"
+                                    valign: "middle"
+                                    text_size: self.size
+
+                            BoxLayout:
+                                size_hint_y: None
+                                height: dp(54)
+                                spacing: dp(10)
+
+                                IconButton:
+                                    source: "assets/icons/chamber.png"
+                                    size_hint: None, None
+                                    size: dp(42), dp(42)
+                                    on_release: root.ui_only_notice("Aux fan (UI only)")
+
+                                Slider:
+                                    id: octo_aux_fan
+                                    min: 0
+                                    max: 100
+                                    value: 0
+
+                                Label:
+                                    size_hint_x: None
+                                    width: dp(52)
+                                    text: str(int(octo_aux_fan.value)) + "%"
+                                    color: 0.86,0.90,0.96,1
+                                    halign: "right"
+                                    valign: "middle"
+                                    text_size: self.size
+
+                    Card:
+                        Label:
+                            text: "Temperature Control (placeholders)"
+                            font_size: "16sp"
+                            bold: True
+                            size_hint_y: None
+                            height: self.texture_size[1]
+
+                        Label:
+                            text: "UI-only for now."
+                            color: 0.70,0.78,0.88,1
+                            size_hint_y: None
+                            height: dp(18)
+
+                        GridLayout:
+                            cols: 1
+                            spacing: dp(10)
+                            size_hint_y: None
+                            height: self.minimum_height
+
+                            BoxLayout:
+                                size_hint_y: None
+                                height: dp(54)
+                                spacing: dp(10)
+
+                                IconButton:
+                                    source: "assets/icons/nozzle.png"
+                                    size_hint: None, None
+                                    size: dp(42), dp(42)
+                                    on_release: root.ui_only_notice("Nozzle target (UI only)")
+
+                                Slider:
+                                    id: octo_nozzle_target
+                                    min: 0
+                                    max: 300
+                                    value: 0
+
+                                Label:
+                                    size_hint_x: None
+                                    width: dp(72)
+                                    text: str(int(octo_nozzle_target.value)) + "°C"
+                                    color: 0.86,0.90,0.96,1
+                                    halign: "right"
+                                    valign: "middle"
+                                    text_size: self.size
+
+                            BoxLayout:
+                                size_hint_y: None
+                                height: dp(54)
+                                spacing: dp(10)
+
+                                IconButton:
+                                    source: "assets/icons/bed.png"
+                                    size_hint: None, None
+                                    size: dp(42), dp(42)
+                                    on_release: root.ui_only_notice("Bed target (UI only)")
+
+                                Slider:
+                                    id: octo_bed_target
+                                    min: 0
+                                    max: 120
+                                    value: 0
+
+                                Label:
+                                    size_hint_x: None
+                                    width: dp(72)
+                                    text: str(int(octo_bed_target.value)) + "°C"
+                                    color: 0.86,0.90,0.96,1
+                                    halign: "right"
+                                    valign: "middle"
+                                    text_size: self.size
 
             BottomNav:
                 id: nav_octo
@@ -887,6 +1064,12 @@
                             size_hint_y: None
                             height: self.texture_size[1]
 
+                        Label:
+                            text: "Tap the logo to open"
+                            size_hint_y: None
+                            height: dp(18)
+                            color: 0.70,0.78,0.88,1
+
                         BoxLayout:
                             size_hint_y: None
                             height: dp(92)
@@ -899,10 +1082,11 @@
                                     pos: self.pos
                                     size: self.size
                                     radius: [18]
+
                             ClickableImage:
                                 source: "assets/Partner1.png"
                                 size_hint_x: None
-                                width: dp(170)
+                                width: dp(200)
                                 on_release: app.open_url("https://octoeverywhere.com")
 
             BottomNav:
