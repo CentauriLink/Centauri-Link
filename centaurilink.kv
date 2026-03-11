@@ -3,11 +3,7 @@
 
 # =========================================================
 #  CentauriLink - FINAL KV (Sleek Dark + Bottom Nav)
-#  - HOME: local-only temps + status (no cam, no controls)
-#  - CONTROL: stays, but local-mode = no cam button, no fan controls
-#  - OCTO: connect + status + temp + camera box + placeholder fan/temp controls
-#  - SETTINGS: donate + links + partners (clickable partner logo using ClickableImage)
-#  - Background covers FULL SCREEN (Window.size)
+#  - Fixed dynamic label sizing, canvas sizing, and scroll padding
 # =========================================================
 
 # ---------------- Base widgets ----------------
@@ -145,39 +141,53 @@
     padding: dp(14)
     spacing: dp(12)
     canvas.before:
+        # ── Deep space base ──
         Color:
-            rgba: 0.03,0.04,0.06,1
+            rgba: 0.02, 0.03, 0.07, 1
         Rectangle:
-            pos: 0, 0
-            size: Window.size
+            pos: self.pos
+            size: self.size
 
+        # ── Upper blue-teal gradient overlay ──
         Color:
-            rgba: 0.06,0.10,0.20,0.55
+            rgba: 0.05, 0.09, 0.20, 0.72
         Rectangle:
-            pos: 0, Window.height*0.45
-            size: Window.width, Window.height*0.55
+            pos: self.x, self.y + self.height * 0.40
+            size: self.width, self.height * 0.60
 
+        # ── Top-left cyan glow ──
         Color:
-            rgba: 0.10,0.65,0.95,0.18
+            rgba: 0.08, 0.62, 0.95, 0.22
         Ellipse:
-            pos: self.x - dp(80), self.y + self.height - dp(220)
-            size: dp(320), dp(320)
+            pos: self.x - dp(100), self.y + self.height - dp(240)
+            size: dp(380), dp(380)
+
+        # ── Top-right indigo glow ──
         Color:
-            rgba: 0.30,0.25,0.95,0.14
+            rgba: 0.35, 0.20, 0.95, 0.16
         Ellipse:
-            pos: self.right - dp(260), self.y + self.height*0.35
-            size: dp(320), dp(320)
+            pos: self.right - dp(280), self.y + self.height * 0.40
+            size: dp(340), dp(340)
+
+        # ── Bottom-left teal accent ──
         Color:
-            rgba: 0.10,0.95,0.70,0.10
+            rgba: 0.05, 0.88, 0.65, 0.09
         Ellipse:
-            pos: self.x - dp(120), self.y - dp(160)
-            size: dp(360), dp(360)
+            pos: self.x - dp(140), self.y - dp(180)
+            size: dp(420), dp(420)
+
+        # ── Center subtle vignette darkening ──
+        Color:
+            rgba: 0.01, 0.02, 0.05, 0.30
+        Ellipse:
+            pos: self.center_x - self.width * 0.4, self.y - self.height * 0.1
+            size: self.width * 0.8, self.height * 0.5
 
 <Header@BoxLayout>:
     size_hint_y: None
-    height: dp(92)
-    padding: dp(10)
-    spacing: dp(12)
+    height: dp(84)
+    padding: dp(12), dp(10)
+    spacing: dp(14)
     canvas.before:
         Color:
             rgba: 0,0,0,0.40
@@ -271,9 +281,9 @@
 <BottomNav@BoxLayout>:
     active: ""   # "home" / "print" / "octo" / "settings"
     size_hint_y: None
-    height: dp(78)
-    padding: dp(12), dp(10)
-    spacing: dp(10)
+    height: dp(72)
+    padding: dp(10), dp(8)
+    spacing: dp(8)
     canvas.before:
         Color:
             rgba: 0,0,0,0.55
@@ -350,7 +360,7 @@
                     size_hint_y: None
                     height: self.minimum_height
                     spacing: dp(12)
-                    padding: dp(4)
+                    padding: dp(4), dp(4), dp(4), dp(92)   # reserve space for BottomNav
 
                     Header:
 
@@ -376,7 +386,10 @@
                                 Label:
                                     text: "Nozzle • " + app.nozzle_temp + "°C"
                                     size_hint_y: None
-                                    height: dp(22)
+                                    text_size: self.width - dp(24), None
+                                    halign: "left"
+                                    valign: "middle"
+                                    height: self.texture_size[1] + dp(6)
                                     color: 0.95,0.98,1,1
                                     bold: True
                                 ProgressBar:
@@ -390,7 +403,10 @@
                                 Label:
                                     text: "Build Plate • " + app.bed_temp + "°C"
                                     size_hint_y: None
-                                    height: dp(22)
+                                    text_size: self.width - dp(24), None
+                                    halign: "left"
+                                    valign: "middle"
+                                    height: self.texture_size[1] + dp(6)
                                     color: 0.95,0.98,1,1
                                     bold: True
                                 ProgressBar:
@@ -404,7 +420,10 @@
                                 Label:
                                     text: "Chamber • " + app.chamber_temp + "°C"
                                     size_hint_y: None
-                                    height: dp(22)
+                                    text_size: self.width - dp(24), None
+                                    halign: "left"
+                                    valign: "middle"
+                                    height: self.texture_size[1] + dp(6)
                                     color: 0.95,0.98,1,1
                                     bold: True
                                 ProgressBar:
@@ -428,7 +447,10 @@
                             Label:
                                 text: "State: " + app.print_state
                                 size_hint_y: None
-                                height: dp(22)
+                                text_size: self.width - dp(24), None
+                                halign: "left"
+                                valign: "middle"
+                                height: self.texture_size[1] + dp(6)
                                 color: 0.92,0.95,0.98,1
 
                             BoxLayout:
@@ -446,25 +468,37 @@
                             Label:
                                 text: "Layer: " + (app.print_layer if app.print_layer else "-") + " / " + (app.print_total_layer if app.print_total_layer else "-")
                                 size_hint_y: None
-                                height: dp(22)
+                                text_size: self.width - dp(24), None
+                                halign: "left"
+                                valign: "middle"
+                                height: self.texture_size[1] + dp(6)
                                 color: 0.78,0.86,0.95,1
 
                             Label:
                                 text: "Coords: " + app.coords
                                 size_hint_y: None
-                                height: dp(22)
+                                text_size: self.width - dp(24), None
+                                halign: "left"
+                                valign: "middle"
+                                height: self.texture_size[1] + dp(6)
                                 color: 0.78,0.86,0.95,1
 
                             Label:
                                 text: "Lights: " + app.light_state
                                 size_hint_y: None
-                                height: dp(22)
+                                text_size: self.width - dp(24), None
+                                halign: "left"
+                                valign: "middle"
+                                height: self.texture_size[1] + dp(6)
                                 color: 0.78,0.86,0.95,1
 
                             Label:
                                 text: "Updated: " + app.status_timestamp
                                 size_hint_y: None
-                                height: dp(22)
+                                text_size: self.width - dp(24), None
+                                halign: "left"
+                                valign: "middle"
+                                height: self.texture_size[1] + dp(6)
                                 color: 0.60,0.70,0.82,1
 
             BottomNav:
@@ -513,7 +547,7 @@
                     spacing: dp(12)
                     size_hint_y: None
                     height: self.minimum_height
-                    padding: dp(4)
+                    padding: dp(4), dp(4), dp(4), dp(92)   # reserve for nav
 
                     Header:
 
@@ -523,7 +557,10 @@
                             font_size: "13sp"
                             bold: True
                             size_hint_y: None
-                            height: self.texture_size[1]
+                            text_size: self.width - dp(24), None
+                            halign: "left"
+                            valign: "middle"
+                            height: self.texture_size[1] + dp(6)
                             color: 0.92,0.95,0.98,1
 
                     BoxLayout:
@@ -595,37 +632,58 @@
                             Label:
                                 text: "Selected: " + (root.selected_ip if root.selected_ip else "(none)")
                                 size_hint_y: None
-                                height: dp(22)
+                                text_size: self.width - dp(24), None
+                                halign: "left"
+                                valign: "middle"
+                                height: self.texture_size[1] + dp(6)
                                 color: 0.78,0.86,0.95,1
                             Label:
                                 text: "Temperature: " + root.current_temp
                                 size_hint_y: None
-                                height: dp(22)
+                                text_size: self.width - dp(24), None
+                                halign: "left"
+                                valign: "middle"
+                                height: self.texture_size[1] + dp(6)
                                 color: 0.78,0.86,0.95,1
                             Label:
                                 text: "State: " + app.print_state
                                 size_hint_y: None
-                                height: dp(22)
+                                text_size: self.width - dp(24), None
+                                halign: "left"
+                                valign: "middle"
+                                height: self.texture_size[1] + dp(6)
                                 color: 0.78,0.86,0.95,1
                             Label:
                                 text: "Progress: {}%".format(int(app.print_progress))
                                 size_hint_y: None
-                                height: dp(22)
+                                text_size: self.width - dp(24), None
+                                halign: "left"
+                                valign: "middle"
+                                height: self.texture_size[1] + dp(6)
                                 color: 0.78,0.86,0.95,1
                             Label:
                                 text: "Coords: " + app.coords
                                 size_hint_y: None
-                                height: dp(22)
+                                text_size: self.width - dp(24), None
+                                halign: "left"
+                                valign: "middle"
+                                height: self.texture_size[1] + dp(6)
                                 color: 0.78,0.86,0.95,1
                             Label:
                                 text: "Lights: " + app.light_state
                                 size_hint_y: None
-                                height: dp(22)
+                                text_size: self.width - dp(24), None
+                                halign: "left"
+                                valign: "middle"
+                                height: self.texture_size[1] + dp(6)
                                 color: 0.78,0.86,0.95,1
                             Label:
                                 text: "Updated: " + app.status_timestamp
                                 size_hint_y: None
-                                height: dp(22)
+                                text_size: self.width - dp(24), None
+                                halign: "left"
+                                valign: "middle"
+                                height: self.texture_size[1] + dp(6)
                                 color: 0.60,0.70,0.82,1
 
                     Card:
@@ -673,276 +731,70 @@
                     on_release: app.root.current = "settings"
 
 
-# ---------------- OCTO (REMOTE MODE UI + PLACEHOLDERS) ----------------
+# ---------------- OCTO (LOCKED TAB) ----------------
 
 <OctoScreen>:
     ScreenRoot:
         BoxLayout:
             orientation: "vertical"
-            spacing: dp(12)
+            spacing: dp(0)
 
-            ScrollView:
-                do_scroll_x: False
-                bar_width: dp(6)
+            # ── Main area: simple RelativeLayout so the card centres reliably ──
+            RelativeLayout:
+                size_hint_y: 1
 
-                GridLayout:
-                    cols: 1
-                    size_hint_y: None
+                # ── Lock card ──
+                BoxLayout:
+                    orientation: "vertical"
+                    spacing: dp(16)
+                    size_hint: None, None
+                    width: min(root.width * 0.82, dp(360))
                     height: self.minimum_height
-                    spacing: dp(12)
-                    padding: dp(4)
+                    pos_hint: {"center_x": 0.5, "center_y": 0.54}
+                    padding: dp(32), dp(36), dp(32), dp(36)
 
-                    Header:
+                    canvas.before:
+                        Color:
+                            rgba: 0, 0, 0, 0.50
+                        RoundedRectangle:
+                            pos: self.x, self.y - dp(4)
+                            size: self.size
+                            radius: [26]
+                        Color:
+                            rgba: 0.10, 0.12, 0.18, 0.90
+                        RoundedRectangle:
+                            pos: self.pos
+                            size: self.size
+                            radius: [26]
+                    canvas.after:
+                        Color:
+                            rgba: 0.10, 0.65, 0.95, 0.30
+                        Line:
+                            rounded_rectangle: (self.x, self.y, self.width, self.height, 26,26,26,26)
+                            width: 1.4
 
-                    Card:
-                        Label:
-                            text: "OctoEverywhere"
-                            font_size: "16sp"
-                            bold: True
-                            size_hint_y: None
-                            height: self.texture_size[1]
+                    # Lock icon
+                    Label:
+                        text: "Tab Locked"
+                        font_size: "22sp"
+                        bold: True
+                        color: 0.95, 0.97, 1, 1
+                        size_hint_y: None
+                        height: dp(34)
+                        halign: "center"
+                        valign: "middle"
+                        text_size: self.width, self.height
 
-                        Label:
-                            text: root.status_text
-                            color: 0.70,0.78,0.88,1
-                            size_hint_y: None
-                            height: self.texture_size[1] + dp(6)
-
-                        PrimaryButton:
-                            text: "Connect to OctoEverywhere"
-                            on_release: root.connect_octoeverywhere()
-
-                        SecondaryButton:
-                            text: "Open OctoEverywhere Website"
-                            on_release: app.open_url("https://octoeverywhere.com")
-
-                    Card:
-                        Label:
-                            text: "Octo Temperatures"
-                            font_size: "16sp"
-                            bold: True
-                            color: 1,1,1,1
-                            size_hint_y: None
-                            height: self.texture_size[1]
-
-                        GridLayout:
-                            cols: 1
-                            spacing: dp(10)
-                            size_hint_y: None
-                            height: self.minimum_height
-
-                            BoxLayout:
-                                orientation: "vertical"
-                                size_hint_y: None
-                                height: dp(60)
-                                Label:
-                                    text: "Nozzle • " + app.octo_nozzle_temp + "°C"
-                                    size_hint_y: None
-                                    height: dp(22)
-                                    color: 0.95,0.98,1,1
-                                    bold: True
-                                ProgressBar:
-                                    max: 300
-                                    value: app.octo_nozzle_value
-
-                            BoxLayout:
-                                orientation: "vertical"
-                                size_hint_y: None
-                                height: dp(60)
-                                Label:
-                                    text: "Build Plate • " + app.octo_bed_temp + "°C"
-                                    size_hint_y: None
-                                    height: dp(22)
-                                    color: 0.95,0.98,1,1
-                                    bold: True
-                                ProgressBar:
-                                    max: 120
-                                    value: app.octo_bed_value
-
-                            BoxLayout:
-                                orientation: "vertical"
-                                size_hint_y: None
-                                height: dp(60)
-                                Label:
-                                    text: "Chamber • " + app.octo_chamber_temp + "°C"
-                                    size_hint_y: None
-                                    height: dp(22)
-                                    color: 0.95,0.98,1,1
-                                    bold: True
-                                ProgressBar:
-                                    max: 120
-                                    value: app.octo_chamber_value
-
-                    Card:
-                        Label:
-                            text: "Octo Camera View (Comming soon..)"
-                            font_size: "16sp"
-                            bold: True
-                            size_hint_y: None
-                            height: self.texture_size[1]
-
-                        BoxLayout:
-                            size_hint_y: None
-                            height: dp(190)
-                            padding: dp(10)
-                            canvas.before:
-                                Color:
-                                    rgba: 0.08,0.10,0.14,0.85
-                                RoundedRectangle:
-                                    pos: self.pos
-                                    size: self.size
-                                    radius: [18]
-
-                            # CHANGED to Image so we can render MJPEG frames into it
-                            Image:
-                                id: octo_camera
-                                source: ""
-                                allow_stretch: True
-                                keep_ratio: True
-
-                    Card:
-                        Label:
-                            text: "Fan Control (placeholders)"
-                            font_size: "16sp"
-                            bold: True
-                            size_hint_y: None
-                            height: self.texture_size[1]
-
-                        Label:
-                            text: "UI-only for now."
-                            color: 0.70,0.78,0.88,1
-                            size_hint_y: None
-                            height: dp(18)
-
-                        GridLayout:
-                            cols: 1
-                            spacing: dp(10)
-                            size_hint_y: None
-                            height: self.minimum_height
-
-                            BoxLayout:
-                                size_hint_y: None
-                                height: dp(54)
-                                spacing: dp(10)
-
-                                IconButton:
-                                    source: "assets/icons/nozzle.png"
-                                    size_hint: None, None
-                                    size: dp(42), dp(42)
-                                    on_release: root.ui_only_notice("Model fan (UI only)")
-
-                                Slider:
-                                    id: octo_model_fan
-                                    min: 0
-                                    max: 100
-                                    value: 0
-
-                                Label:
-                                    size_hint_x: None
-                                    width: dp(52)
-                                    text: str(int(octo_model_fan.value)) + "%"
-                                    color: 0.86,0.90,0.96,1
-                                    halign: "right"
-                                    valign: "middle"
-                                    text_size: self.size
-
-                            BoxLayout:
-                                size_hint_y: None
-                                height: dp(54)
-                                spacing: dp(10)
-
-                                IconButton:
-                                    source: "assets/icons/chamber.png"
-                                    size_hint: None, None
-                                    size: dp(42), dp(42)
-                                    on_release: root.ui_only_notice("Aux fan (UI only)")
-
-                                Slider:
-                                    id: octo_aux_fan
-                                    min: 0
-                                    max: 100
-                                    value: 0
-
-                                Label:
-                                    size_hint_x: None
-                                    width: dp(52)
-                                    text: str(int(octo_aux_fan.value)) + "%"
-                                    color: 0.86,0.90,0.96,1
-                                    halign: "right"
-                                    valign: "middle"
-                                    text_size: self.size
-
-                    Card:
-                        Label:
-                            text: "Temperature Control (placeholders)"
-                            font_size: "16sp"
-                            bold: True
-                            size_hint_y: None
-                            height: self.texture_size[1]
-
-                        Label:
-                            text: "UI-only for now."
-                            color: 0.70,0.78,0.88,1
-                            size_hint_y: None
-                            height: dp(18)
-
-                        GridLayout:
-                            cols: 1
-                            spacing: dp(10)
-                            size_hint_y: None
-                            height: self.minimum_height
-
-                            BoxLayout:
-                                size_hint_y: None
-                                height: dp(54)
-                                spacing: dp(10)
-
-                                IconButton:
-                                    source: "assets/icons/nozzle.png"
-                                    size_hint: None, None
-                                    size: dp(42), dp(42)
-                                    on_release: root.ui_only_notice("Nozzle target (UI only)")
-
-                                Slider:
-                                    id: octo_nozzle_target
-                                    min: 0
-                                    max: 300
-                                    value: 0
-
-                                Label:
-                                    size_hint_x: None
-                                    width: dp(72)
-                                    text: str(int(octo_nozzle_target.value)) + "°C"
-                                    color: 0.86,0.90,0.96,1
-                                    halign: "right"
-                                    valign: "middle"
-                                    text_size: self.size
-
-                            BoxLayout:
-                                size_hint_y: None
-                                height: dp(54)
-                                spacing: dp(10)
-
-                                IconButton:
-                                    source: "assets/icons/bed.png"
-                                    size_hint: None, None
-                                    size: dp(42), dp(42)
-                                    on_release: root.ui_only_notice("Bed target (UI only)")
-
-                                Slider:
-                                    id: octo_bed_target
-                                    min: 0
-                                    max: 120
-                                    value: 0
-
-                                Label:
-                                    size_hint_x: None
-                                    width: dp(72)
-                                    text: str(int(octo_bed_target.value)) + "°C"
-                                    color: 0.86,0.90,0.96,1
-                                    halign: "right"
-                                    valign: "middle"
-                                    text_size: self.size
+                    Label:
+                        text: "This tab is currently locked\nbecause I am working on this!"
+                        font_size: "14sp"
+                        color: 0.65, 0.75, 0.88, 1
+                        size_hint_y: None
+                        height: dp(52)
+                        halign: "center"
+                        valign: "middle"
+                        text_size: self.width, self.height
+                        line_height: 1.4
 
             BottomNav:
                 id: nav_octo
@@ -990,7 +842,7 @@
                     size_hint_y: None
                     height: self.minimum_height
                     spacing: dp(12)
-                    padding: dp(4)
+                    padding: dp(4), dp(4), dp(4), dp(92)   # reserve for nav
 
                     Header:
 
@@ -1005,19 +857,28 @@
                         Label:
                             text: "WebSocket: ws://<IP>:3030/websocket"
                             size_hint_y: None
-                            height: dp(20)
+                            text_size: self.width - dp(24), None
+                            halign: "left"
+                            valign: "middle"
+                            height: self.texture_size[1] + dp(6)
                             color: 0.70,0.80,0.92,1
 
                         Label:
                             text: "HTTP fallback polling supported"
                             size_hint_y: None
-                            height: dp(20)
+                            text_size: self.width - dp(24), None
+                            halign: "left"
+                            valign: "middle"
+                            height: self.texture_size[1] + dp(6)
                             color: 0.70,0.80,0.92,1
 
                         Label:
                             text: "Support: work.dewandeljack@gmail.com"
                             size_hint_y: None
-                            height: dp(20)
+                            text_size: self.width - dp(24), None
+                            halign: "left"
+                            valign: "middle"
+                            height: self.texture_size[1] + dp(6)
                             color: 0.70,0.80,0.92,1
 
                     Card:
@@ -1031,13 +892,19 @@
                         Label:
                             text: "Paypal: work.dewandeljack@gmail.com"
                             size_hint_y: None
-                            height: dp(20)
+                            text_size: self.width - dp(24), None
+                            halign: "left"
+                            valign: "middle"
+                            height: self.texture_size[1] + dp(6)
                             color: 0.70,0.80,0.92,1
 
                         Label:
                             text: "IBAN: BE60 7507 1070 0570"
                             size_hint_y: None
-                            height: dp(20)
+                            text_size: self.width - dp(24), None
+                            halign: "left"
+                            valign: "middle"
+                            height: self.texture_size[1] + dp(6)
                             color: 0.70,0.80,0.92,1
 
                     Card:
@@ -1067,7 +934,10 @@
                         Label:
                             text: "Tap the logo to open"
                             size_hint_y: None
-                            height: dp(18)
+                            text_size: self.width - dp(24), None
+                            halign: "left"
+                            valign: "middle"
+                            height: self.texture_size[1] + dp(6)
                             color: 0.70,0.78,0.88,1
 
                         BoxLayout:
